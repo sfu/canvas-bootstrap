@@ -41,31 +41,22 @@ passenger_download_token=$(cat /usr/local/canvas/passenger/passenger-download-to
 
 # Install packages
 yum -y groupinstall "Development Tools"
-yum install -y yum-utils scl-utils
+yum install -y yum-utils scl-utils libcurl-devel
 
-# Install ruby from Software Collections yum repo
-yum install -y rh-ruby25 || fail "Could not install Ruby 2.5 from Software Collections repo"
-cat <<'EOF' > /etc/profile.d/rh-ruby25.sh
-#!/usr/bin/bash
-source /opt/rh/rh-ruby25/enable
-export X_SCLS="`scl enable rh-ruby25 'echo $X_SCLS'`"
-EOF
-chmod +x /etc/profile.d/rh-ruby25.sh
+# Install Ruby 2.5.5 pre-compiled in /usr/local/canvas
+cd /usr/local/canvas/src/rhel7/ruby/ruby-2.5.5 && make install && gem install bundler --version 1.17.3 --no-ri --no-rdoc && cd -
 
-# Add passenger repo
-curl --fail -sSL -u download:"$passenger_download_token" \
-  -o /etc/yum.repos.d/passenger.repo \
-  https://www.phusionpassenger.com/enterprise_yum/el-passenger-enterprise.repo
+# Install apache
+yum install -y httpd httpd-devel
 
-chown root: /etc/yum.repos.d/passenger.repo
-chmod 600 /etc/yum.repos.d/passenger.repo
-
-# Install apache and passenger
-yum install -y httpd httpd-devel mod_passenger_enterprise
+# Install Passenger from Gems
+gem source --add https://download:"$passenger_download_token"@www.phusionpassenger.com/enterprise_gems/
+gem install passenger-enterprise-server --no-rdoc --no-ri
+passenger-install-apache2-module --auto --languages ruby
 
 # Validate passenger installation
-systemctl restart httpd
-passenger-config validate-install --validate-apache2 --auto || fail "Passenger installation verification failed"
+# systemctl restart httpd
+# passenger-config validate-install --validate-apache2 --auto || fail "Passenger installation verification failed"
 
 # Remove git 1.8 and install git 2
 yum -y remove git*
@@ -83,7 +74,7 @@ yum install -y  \
   xmlsec1-devel \
   xmlsec1-openssl-devel \
   libtool-ltdl-devel
-ln -s /usr/pgsql-9.6/bin/pg_config /etc/alternatives/pg_config
+ln -s /usr/pgsql-9.6/bin/pg_config /usr/local/bin
 
 # Set up Canvas installation directory structure
 mkdir -p /var/rails/canvas/{releases,shared/{log,tmp/pids}}
