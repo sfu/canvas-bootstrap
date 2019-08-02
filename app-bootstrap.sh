@@ -26,7 +26,7 @@ yum-config-manager --enable epel
 
 # Add local canvasuser account
 log "Adding local canvasuser account"
-useradd canvasuser || fail "Could not add canvasuser account"
+id -u canvasuser &>/dev/null || useradd canvasuser || fail "Could not add canvasuser account"
 
 # Install passenger's license file
 passenger_license_file=/usr/local/canvas/passenger/passenger-enterprise-license
