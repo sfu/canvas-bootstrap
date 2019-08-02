@@ -69,17 +69,17 @@ yum -y install  https://centos7.iuscommunity.org/ius-release.rpm
 yum -y install  git2u-all
 
 # Install Canvas dependencies
-yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm && \
+yum install -y https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-3.noarch.rpm && \
 yum install -y  \
-  postgresql96-devel \
-  postgresql96-libs \
+  postgresql95-devel \
+  postgresql95-libs \
   sqlite-devel \
   libxslt libxslt-devel \
   libxml2 libxml2-devel \
   xmlsec1-devel \
   xmlsec1-openssl-devel \
   libtool-ltdl-devel
-ln -s /usr/pgsql-9.6/bin/pg_config /usr/local/bin
+ln -s /usr/pgsql-9.5/bin/pg_config /usr/local/bin
 
 # Set up Canvas installation directory structure
 mkdir -p /var/rails/canvas/{releases,shared/{log,tmp/pids}}
