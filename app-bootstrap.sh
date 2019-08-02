@@ -67,6 +67,11 @@ yum install -y httpd httpd-devel mod_passenger_enterprise
 systemctl restart httpd
 passenger-config validate-install --validate-apache2 --auto || fail "Passenger installation verification failed"
 
+# Remove git 1.8 and install git 2
+yum -y remove git*
+yum -y install  https://centos7.iuscommunity.org/ius-release.rpm
+yum -y install  git2u-all
+
 # Install Canvas dependencies
 yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-redhat96-9.6-3.noarch.rpm && \
 yum install -y  \
