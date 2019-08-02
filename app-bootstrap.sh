@@ -78,3 +78,4 @@ ln -s /usr/pgsql-9.6/bin/pg_config /usr/local/bin
 
 # Set up Canvas installation directory structure
 mkdir -p /var/rails/canvas/{releases,shared/{log,tmp/pids}}
+chown -R canvasuser: /var/rails
