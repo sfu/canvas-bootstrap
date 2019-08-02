@@ -14,6 +14,9 @@ fail_with_code() { code="$1" ; shift ; log "\nERROR: $*\n" >&2 ; exit "$code" ; 
 export http_proxy=http://proxy.sfu.ca:8080
 export https_proxy=http://proxy.sfu.ca:8080
 
+# Enable root ssh with key
+/usr/local/canvas/enable-rootssh-nsx
+
 # Update packages
 log "Updating installed yum packages"
 yum -y update || fail "Could not update yum packages"
