@@ -41,7 +41,7 @@ passenger_download_token=$(cat /usr/local/canvas/passenger/passenger-download-to
 
 # Install packages
 yum -y groupinstall "Development Tools"
-yum install -y yum-utils scl-utils libcurl-devel
+yum install -y yum-utils scl-utils libcurl-devel zlib-devel openssl-devel
 
 # Install Ruby 2.5.5 pre-compiled in /usr/local/canvas
 cd /usr/local/canvas/src/rhel7/ruby/ruby-2.5.5 && make install && gem install bundler --version 1.17.3 --no-ri --no-rdoc && cd -
