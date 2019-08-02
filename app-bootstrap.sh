@@ -85,3 +85,5 @@ yum install -y  \
   libtool-ltdl-devel
 ln -s /usr/pgsql-9.6/bin/pg_config /etc/alternatives/pg_config
 
+# Set up Canvas installation directory structure
+mkdir -p /var/rails/canvas/{releases,shared/{log,tmp/pids}}
