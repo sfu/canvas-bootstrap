@@ -6,6 +6,8 @@ set -o errtrace
 set -o errexit
 set -o pipefail
 
+unalias cp
+
 log()  { printf "%b\n" "$*"; }
 fail() { fail_with_code 1 "$*" ; }
 fail_with_code() { code="$1" ; shift ; log "\nERROR: $*\n" >&2 ; exit "$code" ; }
@@ -86,3 +88,12 @@ ln -s /usr/pgsql-9.5/bin/pg_config /usr/local/bin
 # Set up Canvas installation directory structure
 mkdir -p /var/rails/canvas/{releases,shared/{log,tmp/pids}}
 chown -R canvasuser: /var/rails
+
+# Manually copy Apache config files
+# Can't run the canvasconfig script yet
+cp -f /usr/local/canvas/config-nsx/etc/httpd/conf/httpd.conf.prod /etc/httpd/conf/httpd.conf
+cp -f /usr/local/canvas/config-nsx/etc/httpd/conf.d/passenger.conf.prod /etc/httpd/conf.d/passenger.conf
+cp -f /usr/local/canvas/config-nsx/etc/httpd/conf.d/canvas.conf.prod /etc/httpd/conf.d/canvas.conf
+sed -i "s/HOSTNAME/$(hostname -s)/g" /etc/httpd/conf.d/canvas.conf
+systemctl restart httpd
+passenger-config validate-install --auto --validate-apache2
