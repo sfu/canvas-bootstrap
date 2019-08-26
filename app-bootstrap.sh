@@ -6,8 +6,6 @@ set -o errtrace
 set -o errexit
 set -o pipefail
 
-unalias cp
-
 log()  { printf "%b\n" "$*"; }
 fail() { fail_with_code 1 "$*" ; }
 fail_with_code() { code="$1" ; shift ; log "\nERROR: $*\n" >&2 ; exit "$code" ; }
