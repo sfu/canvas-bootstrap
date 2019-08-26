@@ -27,7 +27,7 @@ yum -y update || fail "Could not update yum packages"
 subscription-manager repos --enable rhel-7-server-optional-rpms
 subscription-manager repos --enable rhel-server-rhscl-7-rpms
 yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 2>&1 | tee /tmp/yum.output && cat /tmp/yum.output && rm /tmp/yum.output
-yum-config-manager --enable epel 
+yum-config-manager --enable epel
 
 # Add local canvasuser account
 log "Adding local canvasuser account"
@@ -46,7 +46,7 @@ passenger_download_token=$(cat /usr/local/canvas/passenger/passenger-download-to
 
 # Install packages
 yum -y groupinstall "Development Tools"
-yum install -y yum-utils scl-utils libcurl-devel zlib-devel openssl-devel
+yum install -y yum-utils scl-utils libcurl-devel zlib-devel openssl-devel readline readline-devel
 
 # Install Ruby 2.5.5 pre-compiled in /usr/local/canvas
 cd /usr/local/canvas/src/rhel7/ruby/ruby-2.5.5 && make install && gem install bundler --version 1.17.3 --no-ri --no-rdoc && cd -
@@ -54,10 +54,12 @@ cd /usr/local/canvas/src/rhel7/ruby/ruby-2.5.5 && make install && gem install bu
 # Install apache
 yum install -y httpd httpd-devel
 
-# Install Passenger from Gems
-gem source --add https://download:"$passenger_download_token"@www.phusionpassenger.com/enterprise_gems/
-gem install passenger-enterprise-server --no-rdoc --no-ri
-passenger-install-apache2-module --auto --languages ruby
+# Install Passenger from Yum
+# This also installs Ruby 2.0 but we can ignore that
+curl --fail -sSL -u "download:$(cat /usr/local/canvas/passenger/passenger-download-token)" -o /etc/yum.repos.d/passenger.repo https://www.phusionpassenger.com/enterprise_yum/el-passenger-enterprise.repo
+chown root: /etc/yum.repos.d/passenger.repo
+chmod 600 /etc/yum.repos.d/passenger.repo
+yum install -y mod_passenger_enterprise
 
 # Validate passenger installation
 # systemctl restart httpd
@@ -71,14 +73,14 @@ yum -y install  git2u-all
 # Install Canvas dependencies
 yum install -y https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-3.noarch.rpm && \
 yum install -y  \
-  postgresql95-devel \
-  postgresql95-libs \
-  sqlite-devel \
-  libxslt libxslt-devel \
-  libxml2 libxml2-devel \
-  xmlsec1-devel \
-  xmlsec1-openssl-devel \
-  libtool-ltdl-devel
+postgresql95-devel \
+postgresql95-libs \
+sqlite-devel \
+libxslt libxslt-devel \
+libxml2 libxml2-devel \
+xmlsec1-devel \
+xmlsec1-openssl-devel \
+libtool-ltdl-devel
 ln -s /usr/pgsql-9.5/bin/pg_config /usr/local/bin
 
 # Set up Canvas installation directory structure
